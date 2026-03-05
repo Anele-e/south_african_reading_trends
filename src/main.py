@@ -1,7 +1,8 @@
 from db import init_db, already_scraped
 from sitemap import get_book_sitemaps, get_urls_from_sitemaps
 from ingest import ingest_product
-from config import DATABASE_PATH
+from config import DATABASE_PATH, REQUEST_DELAY, MAX_RETRIES
+from retry import get_retries, calculate_wait_time
 import time
 import random
 
@@ -28,6 +29,20 @@ def run():
             time.sleep(random.uniform(1,2))
     conn.commit()
     conn.close()
+
+    retries = get_retries()
+
+    for row_id, product_id, status_code, retry_after, retry_count in retries:
+        wait_time = calculate_wait_time(status_code, retry_count, retry_after)
+        print(f"Retrying {product_id} in {wait_time}s")
+        time.sleep(wait_time)
+        ingest_product(plid=product_id, conn=conn)
+
+        conn.execute("""
+        UPDATE raw_books
+        SET retry_count = retry_count + 1
+        WHERE id = ?
+        """, (row_id,))   
 
 if __name__ == "__main__":
     run()
