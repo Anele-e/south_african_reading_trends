@@ -21,6 +21,31 @@ def init_db():
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS authors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE,
+        nationality TEXT
+        );
+""")
+    
+    cursor.execute("""
+    CREATE TABLE books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        author_id INTEGER,
+        price REAL,
+        rating REAL,
+        rating_count INTEGER,
+        publisher TEXT,
+        isbn TEXT,
+        language TEXT,
+        category TEXT,
+        scrape_date TEXT,
+        FOREIGN KEY (author_id) REFERENCES authors(id)
+);
+""")
+
     conn.commit()
     conn.close()
 
@@ -37,4 +62,6 @@ def already_scraped(conn, plid):
     )
 
     return cursor.fetchone() is not None
+
+
 
