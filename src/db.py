@@ -30,7 +30,7 @@ def init_db():
 """)
     
     cursor.execute("""
-    CREATE TABLE books (
+    CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         author_id INTEGER,

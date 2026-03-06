@@ -1,7 +1,7 @@
 from db import init_db, already_scraped
 from sitemap import get_book_sitemaps, get_urls_from_sitemaps
 from ingest import ingest_product
-from parsing import get_table_data
+from parsing import parse_data
 from config import DATABASE_PATH, REQUEST_DELAY, MAX_RETRIES
 from retry import get_retries, calculate_wait_time
 import time
@@ -44,7 +44,7 @@ def run():
         SET retry_count = retry_count + 1
         WHERE id = ?
         """, (row_id,))
-    get_table_data(conn=conn)
+    parse_data(conn=conn)
     
     
     conn.close()
