@@ -20,6 +20,11 @@ def ingest_product(plid, conn):
         "Referer": "https://www.takealot.com/"
     }
 
+    retry_after = None
+    status_code = None
+    response_json = None
+    error_message = None
+
     try:
         r = requests.get(url, headers=headers, timeout=10)
         retry_after = r.headers.get("Retry-After")
